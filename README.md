@@ -1,36 +1,140 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+### AuditAI - AI Smart Contract Auditor
 
-## Getting Started
+AuditAI is an innovative tool designed to leverage the power of AI to audit smart contracts. This project uses Chainlink Functions to connect to the OpenAI API for generating detailed audit reports and deploys the smart contract on the Avalanche Fuji Testnet.
 
-First, run the development server:
+<a href="" title="Project Screenshot">
+    <img src="./public/audit.png" width="100%" alt="Project Screenshot"/>
+</a>
+
+### Table of Contents
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Setup and Deployment](#setup-and-deployment)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+### Introduction
+
+AuditAI provides an easy and efficient way to audit your smart contracts using AI. It interacts with the OpenAI API to analyze and generate detailed reports on the provided smart contract code, which are then emitted as events from the blockchain.
+
+### Features
+
+- **AI-Powered Auditing**: Leverages OpenAI to generate comprehensive audit reports.
+- **ERC20 Token**: Includes a default ERC20 token (AuditAI Token).
+- **Smart Contract Event Emission**: Emits audit events that can be tracked on the blockchain.
+- **Deployed on Avalanche Fuji Testnet**: Utilizes Avalanche Fuji Testnet for deployment and interactions.
+- **Chainlink Functions**: Uses Chainlink Functions to securely connect with the OpenAI API.
+- **User-Friendly Interface**: Provides an easy-to-use frontend for auditing smart contracts.
+
+### Architecture
+
+1. **Smart Contract**: `AuditAI.sol`
+2. **Frontend**: React-based user interface
+3. **Blockchain Network**: Avalanche Fuji Testnet
+4. **API Integration**: Chainlink Functions for OpenAI API
+
+### Setup and Deployment
+
+#### Prerequisites
+
+- Node.js and npm installed
+- MetaMask extension installed
+- Avalanche Fuji Testnet setup in MetaMask
+- Hardhat installed
+- Ethers.js installed
+
+#### Hardhat Configuration
+
+Create a `hardhat.config.js` file in the root directory with the following content:
+
+```javascript
+require("@nomiclabs/hardhat-waffle");
+require("@nomiclabs/hardhat-ethers");
+
+module.exports = {
+  solidity: "0.8.0",
+  networks: {
+    fuji: {
+      url: "https://api.avax-test.network/ext/bc/C/rpc",
+      accounts: [`0x${process.env.PRIVATE_KEY}`],
+    },
+  },
+};
+```
+
+#### Steps
+
+1. **Clone the Repository**
+
+```bash
+git clone https://github.com/yourusername/AuditAI.git
+cd AuditAI
+```
+
+2. **Install Dependencies**
+
+```bash
+npm install
+```
+
+3. **Setup Environment Variables**
+
+Create a `.env` file in the root directory with the following content:
+
+```plaintext
+NEXT_PUBLIC_API_KEY=your_openai_api_key
+NEXT_PUBLIC_CONTRACT_ADDRESS=your_deployed_contract_address
+PRIVATE_KEY=your_private_key
+```
+
+4. **Compile and Deploy Smart Contract**
+
+Create a `scripts/deploy.js` file with the following content:
+
+```javascript
+async function main() {
+  const [deployer] = await ethers.getSigners();
+  console.log("Deploying contracts with the account:", deployer.address);
+
+  const AuditAI = await ethers.getContractFactory("AuditAI");
+  const auditAI = await AuditAI.deploy();
+
+  console.log("AuditAI deployed to:", auditAI.address);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+```
+
+Run the following command to compile and deploy the smart contract:
+
+```bash
+npx hardhat run scripts/deploy.js --network fuji
+```
+
+5. **Start the Frontend**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Usage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Connect Wallet**: Connect your MetaMask wallet to the Avalanche Fuji Testnet.
+2. **Submit Contract Code**: Paste your smart contract code into the provided textarea and click "Analyze".
+3. **View Results**: After analysis, view the detailed audit report and metrics in the modal that appears.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Contributing
 
-## Learn More
+Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
 
-To learn more about Next.js, take a look at the following resources:
+### License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the MIT License.
