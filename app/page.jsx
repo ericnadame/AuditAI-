@@ -1,16 +1,62 @@
 "use client";
+import AuditAI from "../artifacts/contracts/AuditAI.sol/AuditAI.json";
 import { WavyBackground } from "@/components/ui/wavy-background";
 import OpenAI from "openai";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { ethers } from "ethers"; // Import Ethers.js
+
 const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
 const openai = new OpenAI({
   apiKey: apiKey,
   dangerouslyAllowBrowser: true,
 });
+
+const AVAX_NETWORK_PARAMS = {
+  chainId: "0xA869", // Hexadecimal representation of 43113
+  chainName: "Avalanche Fuji C-Chain",
+  nativeCurrency: {
+    name: "Avalanche Fuji C-Chain",
+    symbol: "AVAX",
+    decimals: 18,
+  },
+  rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
+  blockExplorerUrls: ["https://subnets-test.avax.network/c-chain"],
+};
+
+const switchToAvalancheFuji = async () => {
+  const { ethereum } = window;
+  if (!ethereum) {
+    alert("Please install MetaMask!");
+    return;
+  }
+
+  try {
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: AVAX_NETWORK_PARAMS.chainId }],
+    });
+  } catch (switchError) {
+    if (switchError.code === 4902) {
+      try {
+        await ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [AVAX_NETWORK_PARAMS],
+        });
+      } catch (addError) {
+        console.error("Failed to add the Avalanche Fuji network:", addError);
+      }
+    } else {
+      console.error(
+        "Failed to switch to the Avalanche Fuji network:",
+        switchError
+      );
+    }
+  }
+};
 
 export default function Home() {
   const placeholders = [
@@ -85,13 +131,54 @@ export default function Home() {
 
     const auditResults = JSON.parse(chatCompletion.choices[0].message.content);
     setResults(auditResults);
+    auditSmartContract();
     setLoading(false);
+  };
+
+  const auditSmartContract = async () => {
+    setLoading(true);
+    try {
+      await switchToAvalancheFuji();
+
+      const { ethereum } = window;
+      if (!ethereum) {
+        alert("Please install MetaMask!");
+        setLoading(false);
+        return;
+      }
+
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+
+      const contractCode = contract;
+      const auditReport = "This is a sample audit report";
+
+      const contractAddress = "0xd89D6f137aDF52FDA3de85ceA6326D7526a47783";
+      const abi = AuditAI.abi;
+      const contractInstance = new ethers.Contract(
+        contractAddress,
+        abi,
+        signer
+      );
+
+      const tx = await contractInstance.auditSmartContract(
+        contractCode,
+        auditReport
+      );
+      await tx.wait();
+
+      console.log("Smart contract audited and event emitted.");
+      setLoading(false);
+    } catch (error) {
+      console.error("Error auditing smart contract:", error);
+      setLoading(false);
+    }
   };
 
   return (
     <main className="flex min-h-screen w-full flex-col items-center justify-between p-24">
       <WavyBackground className="max-w-4xl mx-auto pb-40">
-        <p className="text-2xl md:text-4xl lg:text-7xl text-white font-bold inter-var text-center">
+        <p className="text-4xl md:text-4xl lg:text-7xl text-white font-bold inter-var text-center">
           AuditAI, Smart Contract Auditor
         </p>
         <p className="text-base md:text-lg mt-4 text-white font-normal inter-var text-center">
@@ -112,21 +199,22 @@ export default function Home() {
         <div className="absolute bottom-px inset-x-px p-2 rounded-b-md bg-white dark:bg-neutral-900">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
+              {/* onClick={} */}
               <button
                 type="button"
-                className="inline-flex flex-shrink-0 justify-center items-center size-8 rounded-lg text-gray-500 hover:text-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-neutral-500 dark:hover:text-blue-500"
+                class="inline-flex flex-shrink-0 justify-center items-center size-8 rounded-lg text-gray-500 hover:text-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-neutral-500 dark:hover:text-blue-500"
               >
                 <svg
-                  className="flex-shrink-0 size-4"
+                  class="flex-shrink-0 size-4"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
                   <rect width="18" height="18" x="3" y="3" rx="2"></rect>
                   <line x1="9" x2="15" y1="15" y2="9"></line>
@@ -135,19 +223,19 @@ export default function Home() {
 
               <button
                 type="button"
-                className="inline-flex flex-shrink-0 justify-center items-center size-8 rounded-lg text-gray-500 hover:text-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-neutral-500 dark:hover:text-blue-500"
+                class="inline-flex flex-shrink-0 justify-center items-center size-8 rounded-lg text-gray-500 hover:text-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-neutral-500 dark:hover:text-blue-500"
               >
                 <svg
-                  className="flex-shrink-0 size-4"
+                  class="flex-shrink-0 size-4"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
                   <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
                 </svg>
@@ -157,29 +245,28 @@ export default function Home() {
             <div className="flex items-center gap-x-1">
               <button
                 type="button"
-                className="inline-flex flex-shrink-0 justify-center items-center size-8 rounded-lg text-gray-500 hover:text-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-neutral-500 dark:hover:text-blue-500"
+                class="inline-flex flex-shrink-0 justify-center items-center size-8 rounded-lg text-gray-500 hover:text-blue-600 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-neutral-500 dark:hover:text-blue-500"
               >
                 <svg
-                  className="flex-shrink-0 size-4"
+                  class="flex-shrink-0 size-4"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
                   <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                   <line x1="12" x2="12" y1="19" y2="22"></line>
                 </svg>
               </button>
-
               <button
-                type="button"
                 onClick={analyze}
+                type="button"
                 className="inline-flex flex-shrink-0 justify-center items-center size-8 rounded-lg text-white bg-blue-600 hover:bg-blue-500 focus:z-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <svg
