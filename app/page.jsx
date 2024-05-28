@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { ethers } from "ethers"; // Import Ethers.js
+import { ethers } from "ethers";
 
 const apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
@@ -16,7 +16,7 @@ const openai = new OpenAI({
 });
 
 const AVAX_NETWORK_PARAMS = {
-  chainId: "0xA869", // Hexadecimal representation of 43113
+  chainId: "43113",
   chainName: "Avalanche Fuji C-Chain",
   nativeCurrency: {
     name: "Avalanche Fuji C-Chain",
