@@ -16,7 +16,7 @@ const openai = new OpenAI({
 });
 
 const AVAX_NETWORK_PARAMS = {
-  chainId: "43113",
+  chainId: "0xA869",
   chainName: "Avalanche Fuji C-Chain",
   nativeCurrency: {
     name: "Avalanche Fuji C-Chain",
