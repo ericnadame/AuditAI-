@@ -5,9 +5,6 @@ AuditAI is an innovative tool designed to leverage the power of AI to audit smar
 <a href="" title="Project Screenshot">
     <img src="./public/audit.png" width="100%" alt="Project Screenshot"/>
 </a>
-<a href="" title="Project Screenshot">
-    <img src="./public/report.png" width="100%" alt="Project Screenshot"/>
-</a>
 
 ### Table of Contents
 
