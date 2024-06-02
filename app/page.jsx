@@ -151,7 +151,7 @@ export default function Home() {
       const signer = provider.getSigner();
 
       const contractCode = contract;
-      const auditReport = "This is a sample audit report.";
+      const auditReport = "This is a sample audit report";
 
       const contractAddress = "0xd89D6f137aDF52FDA3de85ceA6326D7526a47783";
       const abi = AuditAI.abi;
